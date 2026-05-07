@@ -100,7 +100,7 @@ Use **`VERIFICATION_CHECKLIST.txt`**. Optional automated smoke tests can live as
 
 ## Version note
 
-**1.0.6** is the current application version (`FastAPI` metadata in `app/main.py`). The patch number reflects **six major engineering passes** during active development (packaging, import/restore hardening, release QA and distribution, delete/ID compaction fixes, repository/GitHub prep, and branding-neutral open-source packaging). You can keep or replace this scheme when you release independently.
+**1.0.6** is the current application version (`FastAPI` metadata in `app/main.py`). The patch number reflects **six major engineering passes** during active development (packaging, import/restore hardening, release QA and distribution, delete/ID compaction fixes, repository/GitHub prep, and branding-neutral open-source packaging). 
 
 ---
 
