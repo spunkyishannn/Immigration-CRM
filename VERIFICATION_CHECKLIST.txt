@@ -1,0 +1,106 @@
+Globaris CRM — verification checklist for releases
+====================================================
+
+Use this after any change to the app, environment, or packaging. Check every section
+that applies. For automated smoke tests from a full development clone, run (if present):
+  python tools_verify_globaris.py
+
+
+1. Environment & install
+------------------------
+  [ ] Target OS matches (here: Windows 10/11).
+  [ ] Python 3.11+ on PATH; `python --version` succeeds.
+  [ ] `pip install -r requirements.txt` completes with no errors.
+  [ ] All declared dependencies install: fastapi, uvicorn, pydantic,
+      email-validator, python-multipart, openpyxl.
+  [ ] No dependency pins missing for reproducible installs (review requirements.txt).
+
+
+2. Desktop launcher & process
+-----------------------------
+  [ ] `Start Globaris CRM.bat` starts without pip errors.
+  [ ] App uses port 8765 (or documented port); no surprise firewall prompt loops.
+  [ ] `http://127.0.0.1:8765/api/health` returns HTTP 200.
+  [ ] Browser window opens in app mode (Edge/Chrome).
+  [ ] `Stop Globaris CRM.bat` stops the listener on 8765 when needed.
+  [ ] `pythonw` path: no stray console window; fallback `python` /MIN still works.
+
+
+3. Static UI & assets
+--------------------
+  [ ] `/` serves `index.html` (no 404).
+  [ ] `static/app.js`, `static/style.css` load (no 404 in browser devtools).
+  [ ] Single-page navigation: Dashboard, Clients, Reports, Settings render.
+  [ ] No JavaScript console errors on initial load.
+  [ ] `api()` surfaces server `detail` / validation errors as readable text (not [object Object]).
+
+
+4. Database & schema
+--------------------
+  [ ] First run creates `immigration_crm.db` in the app folder (non-frozen run).
+  [ ] WAL / busy timeout acceptable under quick repeated actions.
+  [ ] Foreign keys ON for normal connections.
+  [ ] Migrations / `ALTER TABLE` paths run: open app on empty DB and on old DB copy.
+  [ ] Required NOT NULL columns satisfied on create client / import.
+
+
+5. Core API — clients & finance
+-------------------------------
+  [ ] POST `/api/clients` — create with minimal valid body (stage literal, visa_type).
+  [ ] GET `/api/clients` — paginated `{ items, page, limit, total }`.
+  [ ] GET `/api/clients/search` — returns results for a known query.
+  [ ] GET `/api/clients/filters` — stages, countries, visa types.
+  [ ] GET `/api/clients/{id}/detail` — detail bundle loads.
+  [ ] DELETE `/api/clients/{id}` — removes any chosen active case (not only the last row in the UI); after delete, list count decreases.
+  [ ] PUT `/api/clients/{id}` / DELETE — update and soft-delete behave as expected.
+  [ ] GET/PUT `/api/deals/{client_id}` and finance breakdown endpoints respond 200 for valid client.
+  [ ] Payments CRUD and listing for a client.
+
+
+5b. UI — injected HTML (visa cases table)
+------------------------------------------
+  [ ] Client list table escapes applicant text fields (`escapeHtml`) so names or notes with `<`, `>`, `&` cannot break the table or misalign **View / Edit / Delete** buttons.
+
+
+6. Dashboard & reports
+----------------------
+  [ ] GET `/api/dashboard/stats` and `/api/dashboard/overview` — 200, sensible numbers.
+  [ ] GET `/api/reports/analytics` — 200 for charts page.
+
+
+7. Settings, export, backup
+---------------------------
+  [ ] GET/PUT `/api/settings` — biz_name, currency, backup_dir persist.
+  [ ] GET `/api/export/json` — valid JSON backup shape (version field, arrays).
+  [ ] GET `/api/export/csv` — CSV stream downloads.
+  [ ] POST `/api/backup/create` — writes expected files when backup_dir exists and is writable.
+  [ ] POST `/api/import/json` — full v2 backup restores; UTF-8 with BOM accepted.
+  [ ] Import skips orphan deals / rows pointing at clients not in backup (no FK failure).
+
+
+8. Documents & folders (if used)
+---------------------------------
+  [ ] Document upload, list, download, delete.
+  [ ] Client folder path save and open-folder behavior on Windows.
+
+
+9. Data integrity & edge cases
+------------------------------
+  [ ] Restore backup produced by this same app version.
+  [ ] Empty email / duplicate email paths on import — placeholders or clear 400 errors.
+  [ ] Large JSON import — request body read as raw bytes (no silent truncation).
+  [ ] activities / audit rows: optional null ref_ids do not break inserts.
+
+
+10. Packaging hygiene (this folder)
+------------------------------------
+  [ ] Only runtime files: `app/`, `static/`, `desktop_app.py`, `requirements.txt`,
+      launch `.bat`, `README.txt`, this checklist.
+  [ ] No `__pycache__/`, `*.pyc`, `*.db`, local backup JSON, `.env`, API keys.
+  [ ] No `build/`, `dist/`, `.git/`, or editor metadata in the shipped folder.
+  [ ] README paths and behavior match actual data directory rules.
+
+
+11. Sign-off
+-----------
+  Verifier: _______________  Date: _______________  Build / commit: _______________

@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Globaris Consulting — Operations CRM</title>
+<link rel="icon" type="image/png" sizes="16x16" href="/static/favicon-16.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/static/favicon-32.png">
+<link rel="icon" type="image/png" sizes="192x192" href="/static/favicon-192.png">
+<link rel="icon" type="image/png" sizes="512x512" href="/static/favicon-512.png">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;0,9..144,700;1,9..144,400&family=Manrope:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+<nav class="sidebar">
+  <div class="logo">
+    <div class="logo-mark" aria-hidden="true"><img src="/static/app-logo-small.png" alt=""></div>
+    <div class="logo-wordmark">
+      <span class="logo-name">Globaris <strong>Consulting</strong></span>
+      <span class="logo-tagline">Operations CRM</span>
+    </div>
+  </div>
+  <div class="nav-main">
+    <div class="nav-section">MAIN</div>
+    <div class="nav-item active" data-page="dashboard"><span class="icon">📊</span><span>Dashboard</span></div>
+    <div class="nav-item" data-page="cases"><span class="icon">📁</span><span>Visa Cases</span></div>
+    <div class="nav-item" data-page="finance"><span class="icon">💰</span><span>Finance</span></div>
+  </div>
+  <div class="nav-tools">
+    <div class="nav-section">TOOLS</div>
+    <div class="nav-item" data-page="documents"><span class="icon">📄</span><span>Documents</span></div>
+    <div class="nav-item" data-page="reports"><span class="icon">📈</span><span>Reports</span></div>
+    <div class="nav-item" data-page="settings"><span class="icon">⚙️</span><span>Settings</span></div>
+  </div>
+</nav>
+<div class="main">
+  <div class="topbar">
+    <div><h1 id="page-title">Dashboard</h1><p id="page-sub">Welcome back, Admin 👋</p></div>
+    <div class="topbar-right">
+      <button type="button" class="btn btn-outline btn-sm topbar-refresh" id="global-refresh-btn" title="Renumber case IDs (#1…#n) and reload">↻ Refresh</button>
+      <div class="search-box"><span>🔍</span><input type="text" placeholder="Search cases..." id="global-search"></div>
+      <span class="topbar-user-name">Administrator</span>
+    </div>
+  </div>
+  <div class="content">
+    <div class="page active" id="page-dashboard">
+      <div class="dash-kpi-grid" id="stat-grid"></div>
+      <div class="dash-mid-grid">
+        <div class="card dash-card dash-card-glow"><div class="card-title">Pipeline by stage</div><div id="pipeline-chart" class="chart-panel"></div></div>
+        <div class="card dash-card dash-card-glow"><div class="card-title">Cash collections (₹)</div><p class="dash-chart-caption">Last 6 months — payments + Client→Me receipts</p><div id="dash-collections-chart" class="chart-panel"></div></div>
+        <div class="card dash-card dash-card-glow"><div class="card-title">New cases opened</div><p class="dash-chart-caption">Last 6 calendar months (new client records)</p><div id="dash-opened-chart" class="chart-panel"></div></div>
+      </div>
+      <div class="dash-bottom-grid">
+        <div class="card dash-card dash-card-glow"><div class="card-title">Largest balances</div><div id="dash-outstanding-list"></div></div>
+        <div class="card dash-card dash-card-glow"><div class="card-title">Geography &amp; latest movement</div><div id="dash-recent-geo"></div></div>
+      </div>
+    </div>
+    <div class="page" id="page-cases">
+      <div class="toolbar">
+        <span class="toolbar-title">Visa Cases</span>
+        <select class="filter-select" id="filter-stage"></select>
+        <select class="filter-select" id="filter-country"></select>
+        <button class="btn btn-primary" id="add-case-btn">➕ Add Case</button>
+      </div>
+      <div class="card"><div class="table-wrap"><table><thead><tr><th>ID</th><th>Applicant</th><th>Contact</th><th>Country</th><th>Visa Type</th><th>Stage</th><th>Total Fee</th><th>Process Started On</th><th>Actions</th></tr></thead><tbody id="cases-table-body"></tbody></table></div></div>
+    </div>
+    <div class="page" id="page-finance">
+      <div class="toolbar"><span class="toolbar-title">Finance</span><button class="btn btn-primary" id="add-payment-btn">➕ Add Payment (Client → Partners)</button></div>
+      <div class="finance-summary" id="finance-summary"></div>
+      <div class="card">
+        <div class="card-title">Client payment summary</div>
+        <p class="card-subtitle">Each row is one <strong>Client</strong>: agreed fee and total collected (payments to <strong>Partners</strong> plus direct <strong>Client → Me</strong> receipts in Finance Breakdown §3). Use <strong>Add Payment</strong> for Client → Partner collections only.</p>
+        <div class="table-wrap"><table><thead><tr><th>Case</th><th>Total Fee</th><th>Paid</th><th>Balance</th><th>Status</th><th>Actions</th></tr></thead><tbody id="finance-table-body"></tbody></table></div>
+      </div>
+      <div class="card finance-breakdown-card">
+        <h2 class="finance-breakdown-heading">Finance Breakdown</h2>
+        <div class="fb-inr-banner">All amounts in this breakdown are in <strong>Indian Rupees (₹)</strong>.</div>
+        <p class="card-subtitle fb-lead">Per <strong>Client</strong>: <strong>Primary operator</strong>, <strong>Partners</strong>, <strong>Recruiter</strong>, and <strong>Profit to split</strong>.</p>
+        <div class="toolbar finance-breakdown-toolbar">
+          <label class="fb-load-label"><span class="fb-load-label-text">Choose client and load deal</span>
+            <select class="filter-select finance-breakdown-select" id="fb-client-select"></select>
+          </label>
+          <button type="button" class="btn btn-primary" id="fb-load-btn">Load Deal</button>
+        </div>
+        <div id="fb-panel" class="finance-breakdown-panel" hidden>
+          <section class="fb-section">
+            <h3 class="fb-section-title"><span class="fb-section-num">1</span> Section 1: (Global)</h3>
+            <div class="fb-section-body">
+              <h4 class="fb-subheading">Handler names</h4>
+              <p class="fb-section-desc">From the <strong>Client</strong> record: <strong>Primary operator</strong> plus <strong>Recruiting partners</strong>. Leave partners empty when the case is handled by a single operator only.</p>
+              <div class="fb-handler-blocks" id="fb-handler-blocks"></div>
+              <div class="fb-readonly-grid">
+                <div class="form-group"><label>Total client fee (₹)</label><input type="number" id="fb-total-client-fee" step="0.01" min="0" class="fb-editable-input"><span class="field-hint">Editable here; saved with <strong>Save Finance Breakdown</strong>.</span></div>
+                <div class="form-group"><label>Money collected till now (₹)</label><div class="fb-ro" id="fb-money-collected">—</div><span class="field-hint">Σ <strong>Section 2</strong> (Client → Indian Partners) + Σ <strong>Section 3</strong> rows with <strong>Received from: Client</strong>. Updates when you save Finance Breakdown.</span></div>
+              </div>
+              <div class="form-group"><label>Profit to split (₹)</label><input type="number" id="fb-profit-to-split" class="fb-editable-input" step="0.01" min="0"><span class="field-hint">Pool you split among <strong>Handler names</strong> after visa (your planning number).</span></div>
+              <div class="form-group"><label>Total fees to be paid to the Recruiter (₹)</label><input type="number" id="fb-recruiter-fees-total" class="fb-editable-input" step="0.01" min="0"><span class="field-hint">One reminder total for the Polish <strong>Recruiter</strong> (not auto-deducted from <strong>Profit to split</strong>).</span></div>
+              <fieldset class="fb-fieldset">
+                <legend class="fb-legend">Final Profit split criteria</legend>
+                <label class="fb-radio"><input type="radio" name="fb-split-mode" id="fb-split-custom" value="custom_pct"> <strong>a.</strong> Set custom percentage of each handler</label>
+                <label class="fb-radio"><input type="radio" name="fb-split-mode" id="fb-split-equal" value="equal" checked> <strong>b.</strong> Divide equally amongst all handlers</label>
+              </fieldset>
+              <div id="fb-pct-grid" class="form-grid fb-pct-grid"></div>
+              <p class="field-hint" id="fb-equal-hint">Each handler gets the same share of <strong>Profit to split (₹)</strong>.</p>
+            </div>
+          </section>
+          <section class="fb-section">
+            <h3 class="fb-section-title"><span class="fb-section-num">2</span> Section 2: Client transactions with Indian Partners</h3>
+            <div class="fb-section-body">
+              <p class="fb-section-desc">Money the <strong>Client</strong> paid to your <strong>Partners</strong> in India. Same data as <strong>Client payment summary</strong> above; edit here when partners are set. Requires <strong>Recruiting partners</strong> on the case.</p>
+              <p class="field-hint" id="fb-client-payments-hint"></p>
+              <div class="table-wrap fb-table-wrap"><table><thead><tr><th>Amount (₹)</th><th>Payment mode</th><th>Received by</th><th>Date and Time</th><th></th></tr></thead><tbody id="fb-client-payments-body"></tbody></table></div>
+              <button type="button" class="btn btn-outline btn-sm" id="fb-add-client-payment-btn">+ Add row</button>
+            </div>
+          </section>
+          <section class="fb-section">
+            <h3 class="fb-section-title"><span class="fb-section-num">3</span> Section 3: (Money transferred to me)</h3>
+            <div class="fb-section-body">
+              <p class="fb-section-desc">Money sent <strong>to Me</strong> — from a <strong>Partner</strong> or from the <strong>Client</strong> (personal case). Use <strong>Count toward my share settlement</strong> when only part of the receipt counts toward your <strong>Profit to split</strong> share.</p>
+              <div class="table-wrap fb-table-wrap"><table><thead><tr><th>Received amount (₹)</th><th>Received in</th><th>Received from</th><th>Type</th><th>Count toward my share settlement (₹)</th><th>Date and Time</th><th></th></tr></thead><tbody id="fb-receipts-body"></tbody></table></div>
+              <button type="button" class="btn btn-outline btn-sm" id="fb-add-receipt-btn">+ Add row</button>
+            </div>
+          </section>
+          <section class="fb-section">
+            <h3 class="fb-section-title"><span class="fb-section-num">4</span> Section 4: (Money transferred from me to Recruiter)</h3>
+            <div class="fb-section-body">
+              <p class="fb-section-desc">Payments <strong>from Me</strong> to the <strong>Recruiter</strong> (Polish employer).</p>
+              <div class="table-wrap fb-table-wrap"><table><thead><tr><th>Amount Paid (₹)</th><th>Paid via</th><th>Date and Time</th><th></th></tr></thead><tbody id="fb-recruiter-body"></tbody></table></div>
+              <button type="button" class="btn btn-outline btn-sm" id="fb-add-recruiter-btn">+ Add row</button>
+            </div>
+          </section>
+          <div class="fb-computed" id="fb-computed-box"></div>
+          <button type="button" class="btn btn-primary" id="fb-save-btn">Save Finance Breakdown</button>
+        </div>
+      </div>
+    </div>
+    <div class="page" id="page-documents">
+      <div class="toolbar">
+        <span class="toolbar-title">Documents</span>
+      </div>
+      <div class="doc-cards" id="documents-cards"></div>
+    </div>
+    <div class="page" id="page-reports">
+      <div class="toolbar"><span class="toolbar-title">Reports &amp; analytics</span></div>
+      <p class="card-subtitle" style="margin:-8px 0 16px 4px">Four views sized for decisions: book health, who to chase, cash-in velocity, and your profit economics.</p>
+      <div class="reports-grid" id="reports-grid">
+        <div class="card"><div class="card-title">1. Fees agreed vs collected vs outstanding</div><div id="report-chart-book"></div></div>
+        <div class="card"><div class="card-title">2. Top outstanding clients</div><div id="report-chart-outstanding"></div></div>
+        <div class="card"><div class="card-title">3. Collections by month (₹)</div><div id="report-chart-collections"></div></div>
+        <div class="card"><div class="card-title">4. My economics (Finance Breakdown)</div><div id="report-chart-personal"></div></div>
+      </div>
+    </div>
+    <div class="page" id="page-settings">
+      <div class="toolbar"><span class="toolbar-title">Settings</span></div>
+      <div class="settings-layout">
+        <div class="card settings-pane">
+          <div class="card-title">Application</div>
+          <div class="form-group" style="margin-bottom:14px;"><label>Business Name</label><input type="text" id="setting-biz"></div>
+          <div class="form-group" style="margin-bottom:14px;"><label>Backup Directory</label><input type="text" id="setting-backup-dir" placeholder="e.g. S:\CMS Backup"></div>
+          <div class="form-group"><label>Currency</label><input type="text" value="₹ (fixed)" disabled></div>
+          <div style="margin-top:14px;display:flex;gap:8px;flex-wrap:wrap"><button class="btn btn-primary" id="save-settings-btn">Save Settings</button><button class="btn btn-outline" id="create-backup-btn">Create Backup Now</button></div>
+        </div>
+        <div class="card settings-pane">
+          <div class="card-title">Client Folder Path</div>
+          <div class="form-group" style="margin-bottom:10px;"><label>Client</label><select id="setting-folder-client"></select></div>
+          <div class="form-group" style="margin-bottom:10px;"><label>Folder Path</label><input type="text" id="setting-folder-path" placeholder="Set folder path for selected client"></div>
+          <button class="btn btn-primary" id="save-folder-path-btn">Save Path</button>
+        </div>
+      </div>
+      <div class="settings-bottom-actions">
+        <button class="btn btn-outline" id="export-json-btn">📤 Export CSV</button>
+        <label class="btn btn-outline" style="cursor:pointer;">📥 Import Backup JSON<input type="file" id="import-json-file" accept=".json" style="display:none"></label>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="case-modal"><div class="modal" style="width:620px;max-width:96vw"><h2 id="case-modal-title">Add Visa Case</h2><div class="form-grid"><input type="hidden" id="case-id"><div class="form-group"><label>Full name *</label><input type="text" id="c-name"></div><div class="form-group"><label>Phone</label><input type="text" id="c-phone"></div><div class="form-group"><label>Email</label><input type="email" id="c-email"></div><div class="form-group"><label>Country applying to</label><select id="c-country-preset"><option value="Poland">Poland</option><option value="Maldives">Maldives</option><option value="Other">Other</option></select><input type="text" id="c-country-other" placeholder="Type country if Other" style="margin-top:8px;display:none"></div><div class="form-group"><label>Visa type</label><input type="text" id="c-visatype"></div><div class="form-group"><label>Current stage</label><select id="c-stage"></select></div><div class="form-group"><label>Nationality</label><input type="text" id="c-nationality"></div><div class="form-group"><label>Passport no.</label><input type="text" id="c-passport"></div><div class="form-group"><label>Process started on</label><input type="date" id="c-process-started-on"></div><div class="form-group"><label>Total fees agreed (₹)</label><input type="number" id="c-total-fee"><span class="field-hint">What the <strong>Client</strong> owes; drives the payment summary.</span></div><div class="form-group full"><label>Recruiting partners</label><input type="text" id="c-recruiting-partners" placeholder="Comma-separated Partner names in India — leave empty for a personal Client (only you)"><span class="field-hint">Leave blank when the <strong>Client</strong> is yours alone; use <strong>Client</strong> as &quot;Received from&quot; in Finance Breakdown Section 3.</span></div></div><div class="modal-footer"><button class="btn btn-outline" data-close="case-modal">Cancel</button><button class="btn btn-primary" id="save-case-btn">Save Case</button></div></div></div>
+<div class="modal-overlay" id="payment-modal"><div class="modal"><h2 id="payment-modal-title">Add Payment Transaction</h2><div class="form-grid"><input type="hidden" id="pay-id"><div class="form-group full"><label>Linked Case *</label><select id="pay-case"></select></div><div class="form-group"><label>Amount (₹)</label><input type="number" id="pay-amount"></div><div class="form-group"><label>Payment Type</label><select id="pay-type"><option>UPI</option><option>Cash</option><option>Bank Transfer</option></select></div><div class="form-group"><label>Collected By</label><input type="text" id="pay-collected-by"></div><div class="form-group"><label>Date & Time</label><input type="datetime-local" id="pay-datetime"></div><div class="form-group full"><label>Description</label><input type="text" id="pay-desc"></div></div><div class="modal-footer"><button class="btn btn-outline" data-close="payment-modal">Cancel</button><button class="btn btn-primary" id="save-payment-btn">Save</button></div></div></div>
+<div class="modal-overlay" id="client-detail-modal"><div class="modal" style="width:760px;"><h2>Client Detail</h2><div id="client-detail-body"></div><div class="modal-footer"><button class="btn btn-outline" data-close="client-detail-modal">Close</button></div></div></div>
+<div class="modal-overlay" id="folder-modal"><div class="modal" style="width:760px;"><h2 id="folder-modal-title">Client Folder</h2><div style="display:flex;gap:10px;margin-bottom:10px;"><label class="btn btn-primary">Upload File<input type="file" id="folder-upload-file" style="display:none"></label><button class="btn btn-outline" id="open-folder-btn">Open Folder</button></div><div id="folder-files-list"></div><div class="modal-footer"><button class="btn btn-outline" data-close="folder-modal">Close</button></div></div></div>
+<div class="toast" id="toast"></div>
+<script src="/static/app.js"></script>
+</body>
+</html>
