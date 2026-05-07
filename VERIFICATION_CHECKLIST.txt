@@ -1,9 +1,9 @@
-Globaris CRM — verification checklist for releases
-====================================================
+Immigration CRM — verification checklist for releases
+=====================================================
 
 Use this after any change to the app, environment, or packaging. Check every section
-that applies. For automated smoke tests from a full development clone, run (if present):
-  python tools_verify_globaris.py
+that applies. For automated smoke tests from a full development clone, run (if present)
+your project verify script, e.g. `python tools_verify.py`.
 
 
 1. Environment & install
@@ -18,11 +18,11 @@ that applies. For automated smoke tests from a full development clone, run (if p
 
 2. Desktop launcher & process
 -----------------------------
-  [ ] `Start Globaris CRM.bat` starts without pip errors.
+  [ ] `Start Immigration CRM.bat` starts without pip errors.
   [ ] App uses port 8765 (or documented port); no surprise firewall prompt loops.
   [ ] `http://127.0.0.1:8765/api/health` returns HTTP 200.
   [ ] Browser window opens in app mode (Edge/Chrome).
-  [ ] `Stop Globaris CRM.bat` stops the listener on 8765 when needed.
+  [ ] `Stop Immigration CRM.bat` stops the listener on 8765 when needed.
   [ ] `pythonw` path: no stray console window; fallback `python` /MIN still works.
 
 

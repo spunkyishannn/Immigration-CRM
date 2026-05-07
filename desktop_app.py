@@ -16,7 +16,7 @@ from app.main import app
 HOST = "127.0.0.1"
 PORT = 8765
 APP_URL = f"http://{HOST}:{PORT}"
-APP_DATA_DIR = os.path.join(os.getenv("LOCALAPPDATA", os.path.expanduser("~")), "GlobarisCRM")
+APP_DATA_DIR = os.path.join(os.getenv("LOCALAPPDATA", os.path.expanduser("~")), "ImmigrationCRM")
 BROWSER_PROFILE_DIR = os.path.join(APP_DATA_DIR, "browser-profile")
 
 

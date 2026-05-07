@@ -16,7 +16,7 @@ if %errorlevel%==0 (
   start "" pythonw "%~dp0desktop_app.py"
 ) else (
   REM Fallback: separate minimized console
-  start "Globaris CRM" /MIN python "%~dp0desktop_app.py"
+  start "Immigration CRM" /MIN python "%~dp0desktop_app.py"
 )
 
 endlocal

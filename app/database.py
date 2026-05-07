@@ -7,23 +7,10 @@ from pathlib import Path
 
 def _resolve_data_dir() -> Path:
     if getattr(sys, "frozen", False):
-        import shutil
-
         la = Path(os.getenv("LOCALAPPDATA", str(Path.home())))
-        legacy = la / "ImmigrationCRM"
-        modern = la / "GlobarisCRM"
-        modern.mkdir(parents=True, exist_ok=True)
-        try:
-            ldb = legacy / "immigration_crm.db"
-            mdb = modern / "immigration_crm.db"
-            if not mdb.exists() and ldb.exists():
-                shutil.copy2(ldb, mdb)
-            lup, mup = legacy / "uploads", modern / "uploads"
-            if lup.is_dir() and not mup.exists():
-                shutil.copytree(lup, mup)
-        except OSError:
-            pass
-        return modern
+        primary = la / "ImmigrationCRM"
+        primary.mkdir(parents=True, exist_ok=True)
+        return primary
     return Path(__file__).resolve().parent.parent
 
 
@@ -240,7 +227,7 @@ def init_db():
         conn.execute(
             """
             INSERT OR IGNORE INTO app_settings (key, value) VALUES
-            ('biz_name', 'Globaris Consulting'),
+            ('biz_name', 'Immigration CRM'),
             ('currency', '$');
             """
         )
@@ -295,7 +282,7 @@ def init_db():
             """
         )
         conn.execute(
-            "UPDATE app_settings SET value = 'Globaris Consulting' WHERE key = 'biz_name' AND (value = '' OR value = 'Immigration CRM')"
+            "UPDATE app_settings SET value = 'Immigration CRM' WHERE key = 'biz_name' AND (value = '' OR value = 'Immigration CRM')"
         )
 
 

@@ -62,7 +62,9 @@ RECEIPT_TYPES = frozenset({"advance", "after_work_permit", "after_visa", "uncert
 RECRUITER_PAID_VIA = frozenset({"Polish Bank Card", "BLIK", "Indian transfer", "Indian Card"})
 PROFIT_SPLIT_MODES = frozenset({"equal", "custom_pct"})
 
-app = FastAPI(title="Globaris Consulting CRM", version="1.0.0")
+APP_VERSION = "1.0.6"
+
+app = FastAPI(title="Immigration Operations CRM", version=APP_VERSION)
 
 
 def add_activity(conn, kind: str, ref_id: Optional[int], message: str, icon: str = "📋", color: str = "var(--accent)"):

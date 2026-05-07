@@ -8,7 +8,7 @@ const PAGE_SUBS = {
   reports: "Finance and pipeline analytics",
   settings: "App configuration and folders",
 };
-const state = { clients: [], allClients: [], settings: { biz_name: "Globaris Consulting", currency: "₹", backup_dir: "C:\\Globaris\\Backups" }, page: "dashboard", caseSearch: "", folderClientId: null, fbClientId: null, fbBreakdown: null };
+const state = { clients: [], allClients: [], settings: { biz_name: "Immigration CRM", currency: "₹", backup_dir: "C:\\ImmigrationCRM\\Backups" }, page: "dashboard", caseSearch: "", folderClientId: null, fbClientId: null, fbBreakdown: null };
 const INR = "₹";
 const $ = (id) => document.getElementById(id);
 const stageClass = (stage) => ({ "Documentation Done": "stage-doc", "Permit Under Process": "stage-process", "Permit Approved": "stage-approved", "Waiting for Visa Decision": "stage-wait" }[stage] || "stage-doc");
@@ -813,8 +813,8 @@ async function renderReports() {
 }
 
 function loadSettingsUI() {
-  $("setting-biz").value = state.settings.biz_name || "Globaris Consulting";
-  $("setting-backup-dir").value = state.settings.backup_dir || "C:\\Globaris\\Backups";
+  $("setting-biz").value = state.settings.biz_name || "Immigration CRM";
+  $("setting-backup-dir").value = state.settings.backup_dir || "C:\\ImmigrationCRM\\Backups";
   $("setting-folder-client").innerHTML = `<option value="">Select Client</option>${[...state.clients].sort((a, b) => Number(a.id) - Number(b.id)).map((c) => `<option value="${c.id}">#${c.id} - ${escapeHtml(c.full_name)}</option>`).join("")}`;
 }
 async function saveSettings() {
@@ -822,7 +822,7 @@ async function saveSettings() {
     method: "PUT",
     body: JSON.stringify({
       biz_name: $("setting-biz").value.trim(),
-      backup_dir: $("setting-backup-dir").value.trim() || "C:\\Globaris\\Backups",
+      backup_dir: $("setting-backup-dir").value.trim() || "C:\\ImmigrationCRM\\Backups",
     }),
   });
   await loadAll();

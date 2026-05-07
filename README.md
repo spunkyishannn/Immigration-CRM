@@ -1,38 +1,40 @@
-# Globaris Consulting — Operations CRM
+# Immigration Operations CRM
 
-Desktop-friendly **immigration case and finance operations** app for Windows. It runs a small **local web server** and opens the UI in your browser (application window mode). All case and payment data stay **on your machine** unless you export backups yourself.
+Desktop **immigration case and finance operations** app for Windows. It runs a small **local web server** and opens the UI in your browser (application window mode). Case and payment data stay **on your machine** unless you export backups.
+
+**Version:** `1.0.6` — see [Version note](#version-note) below.
 
 ---
 
 ## What it does
 
-- **Visa cases** — Track applicants with contact details, destination country, visa type, pipeline stage, fees, and process dates.
-- **Finance** — Record client payments, balances, and a structured **finance breakdown** per case (operator, partners, recruiter, profit split, receipts).
-- **Deals** — One financial deal per active client; supports partner shares, client receipts, and recruiter-related payouts.
-- **Dashboard & reports** — Operational KPIs, collection trends, pipeline views, and analytics-oriented report widgets.
-- **Documents & folders** — Optional paths to candidate document folders and lightweight file listing (local disk).
-- **Settings** — Business display name, currency symbol, and a **backup directory** for scheduled-style exports.
-- **Backup & restore** — JSON full backup (restore in-app), CSV export, and Excel-oriented backup where configured.
+- **Visa cases** — Applicants, contact details, destination country, visa type, pipeline stage, fees, and process dates.
+- **Finance** — Client payments, balances, and a structured **finance breakdown** per case (operator, partners, recruiter, profit split, receipts).
+- **Deals** — One financial deal per active client; partner shares, client receipts, recruiter-related payouts.
+- **Dashboard & reports** — KPIs, collection trends, pipeline views, analytics widgets.
+- **Documents & folders** — Optional paths to document folders and local file listing.
+- **Settings** — Display name, currency symbol, **backup directory** for exports.
+- **Backup & restore** — JSON full backup (in-app restore), CSV export, Excel-oriented backup where configured.
 
 ---
 
 ## Requirements
 
 - **Windows 10 or 11**
-- **Python 3.11+** (64-bit recommended) with `python` on `PATH`
-- **Microsoft Edge** or **Google Chrome** (used in app mode for the UI)
+- **Python 3.11+** (64-bit recommended), `python` on `PATH`
+- **Microsoft Edge** or **Google Chrome** (app window for the UI)
 
 ---
 
 ## Quick start
 
-1. Install Python from [python.org](https://www.python.org/downloads/) and enable **Add python.exe to PATH** during setup.
-2. Double-click **`Start Globaris CRM.bat`** in this folder.  
-   - First launch may take a moment while dependencies install (`pip install -r requirements.txt`).
-3. The app listens on **`http://127.0.0.1:8765`**. A browser window should open automatically.
-4. To stop: close the CRM window, or run **`Stop Globaris CRM.bat`** (stops whatever is listening on port **8765**).
+1. Install Python from [python.org](https://www.python.org/downloads/) and enable **Add python.exe to PATH**.
+2. Double-click **`Start Immigration CRM.bat`**.
+   - First launch may install dependencies (`pip install -r requirements.txt`).
+3. App URL: **`http://127.0.0.1:8765`** (browser should open automatically).
+4. To stop: close the CRM window, or run **`Stop Immigration CRM.bat`** (frees port **8765**).
 
-**Manual start (developers):**
+**Manual start:**
 
 ```bat
 python -m pip install -r requirements.txt
@@ -43,54 +45,65 @@ python desktop_app.py
 
 ## Data storage
 
-- **Database** (`immigration_crm.db`) is created in **this application folder** when you run the unfrozen (Python) app from here. It holds all cases, payments, deals, and settings.
-- **Browser profile** for the embedded window is stored under your user profile (e.g. `%LOCALAPPDATA%\GlobarisCRM\browser-profile`) — not your CRM records.
-- **Backups** — Configure the backup folder under **Settings**. JSON backups are suitable for full restores; CSV is for spreadsheets. Use **Import backup JSON** only with files created by this app’s backup/export flow.
+- **Database** (`immigration_crm.db`) is created in **this folder** when you run the Python app from here.
+- **Browser profile** (embedded window): `%LOCALAPPDATA%\ImmigrationCRM\browser-profile` — not your CRM records.
+- **Frozen / packaged builds** may store data under `%LOCALAPPDATA%\ImmigrationCRM\` (see `app/database.py`). A one-time copy from older app data folders may apply on first run if a legacy database is found.
+- **Backups** — Set the folder in **Settings**. Use **Import backup JSON** only for files produced by this app’s backup/export.
 
 ---
 
-## Configuration notes
+## Configuration
 
-- **Default backup path** in the UI is a placeholder (`C:\Globaris\Backups`). Set it to a real folder you control.
-- **Primary operator** label in the finance logic is a neutral default (“Primary operator”). Adjust per deployment as needed in code if you require a different fixed label.
-- **Port 8765** is defined in `desktop_app.py`. Change it there if you have a conflict (and update any bookmarked URLs).
+- Default **backup path** in the UI is a placeholder: `C:\ImmigrationCRM\Backups` — set a real path.
+- **Primary operator** in finance logic defaults to the neutral label **Primary operator** (adjust in code if needed).
+- **Port 8765** is set in `desktop_app.py`; change there if required.
 
 ---
 
-## Project layout (this package)
+## Project layout
 
 | Path | Purpose |
 |------|---------|
-| `desktop_app.py` | Starts Uvicorn and opens the UI |
-| `app/main.py` | FastAPI routes, business logic |
-| `app/database.py` | SQLite path, schema, migrations |
-| `app/backup_io.py` | Backup / restore / ID compaction helpers |
+| `desktop_app.py` | Uvicorn + opens UI |
+| `app/main.py` | FastAPI API and logic |
+| `app/database.py` | SQLite, schema |
+| `app/backup_io.py` | Backup / restore / ID compaction |
 | `app/schemas.py` | Request/response models |
-| `static/` | Frontend (`index.html`, `app.js`, `style.css`, icons) |
-| `requirements.txt` | Python dependencies |
-| `VERIFICATION_CHECKLIST.txt` | Suggested QA before releases |
+| `static/` | Frontend |
+| `requirements.txt` | Dependencies |
+| `VERIFICATION_CHECKLIST.txt` | Release QA |
 
 ---
 
 ## Security & privacy
 
-- Designed for **local / trusted-network** use. There is no built-in multi-user authentication in this package.
-- Do not expose port **8765** to the public internet without adding proper security (reverse proxy, TLS, auth).
-- Treat exported JSON/CSV as **sensitive**; they contain applicant and financial information.
+- Built for **local / trusted** use. No built-in multi-user authentication in this package.
+- Do not expose **8765** to the internet without TLS, auth, and hardening.
+- Treat JSON/CSV exports as **sensitive**.
 
 ---
 
 ## Troubleshooting
 
-- **“Pip install failed”** — Confirm `python --version` works in a new Command Prompt.
-- **Port already in use** — Run `Stop Globaris CRM.bat` or exit another instance using port 8765.
-- **Import JSON fails** — Use a **JSON** backup from this app, not a CSV/Excel file. UTF-8 (including BOM) is supported.
-- **Case IDs change after deletes** — The app may renumber active case IDs to stay compact (`#1…#n`); this is intentional after deletes or maintenance.
+- **Pip install failed** — Run `python --version` in a new Command Prompt.
+- **Port in use** — Run `Stop Immigration CRM.bat` or close the other instance.
+- **Import JSON fails** — Use this app’s **JSON** backup, not CSV/Excel alone. UTF-8 (incl. BOM) supported.
+- **Case IDs change after deletes** — Renumbering active cases to `#1…#n` after deletes is intentional.
 
 ---
 
 ## Verification
 
-If you maintain a development tree with the full source, you can run automated smoke checks (health, clients, delete, import/export) via a small script if present in that tree. For shipped folders, use **`VERIFICATION_CHECKLIST.txt`**.
+Use **`VERIFICATION_CHECKLIST.txt`**. Optional automated smoke tests can live as a small script in your dev tree (name it as you prefer).
 
+---
 
+## Version note
+
+**1.0.6** is the current application version (`FastAPI` metadata in `app/main.py`). The patch number reflects **six major engineering passes** during active development (packaging, import/restore hardening, release QA and distribution, delete/ID compaction fixes, repository/GitHub prep, and branding-neutral open-source packaging). You can keep or replace this scheme when you release independently.
+
+---
+
+## License
+
+See `LICENSE` in this repository.
